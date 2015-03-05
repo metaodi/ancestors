@@ -1,6 +1,7 @@
 google.load("visualization", "1", {packages:["orgchart"]});
 google.setOnLoadCallback(drawChart);
 
+
 function getLevel(item_id, child_id, lang, level, callback, rows) {
     console.log("getLevel", level);
     if (level === 0) {
@@ -47,6 +48,26 @@ function processLevel(data, item_id, child_id, lang, level, levelCb, rows) {
     if (claims['P18']) {
         var image_page = claims['P18'][0].mainsnak.datavalue.value || null;
     }
+    // gender P21
+    if (claims['P21']) {
+        var gender_id = claims['P21'][0].mainsnak.datavalue.value['numeric-id'] || null;
+        var gender_html = '';
+        if (gender_id === 6581097) {
+            gender_html = '<i class="fa fa-mars"></i>';
+        } else if (gender_id === 6581072) {
+            gender_html = '<i class="fa fa-venus"></i>';
+        }
+    }
+
+    // date of birth P569
+    if (claims['P569']) {
+        var birth_value = claims['P569'][0].mainsnak.datavalue.value['time'] || null;
+    }
+
+    // date of death P570
+    if (claims['P570']) {
+        var death_value = claims['P570'][0].mainsnak.datavalue.value['time'] || null;
+    }
 
     async.parallel(
         [
@@ -79,6 +100,19 @@ function processLevel(data, item_id, child_id, lang, level, levelCb, rows) {
                 }
             },
             function(callback) {
+                var html = '<div>';
+                html += '<a href="' + location.href.replace(location.search, '') + '?q=' + item_id + '">' + label + '</a>';
+                html += '<br/>' + gender_html;
+                moment.locale(lang);
+                if (birth_value) {
+                    html += '<br/>' + moment(birth_value.substr('+0000000'.length)).format('L') + '&nbsp;-&nbsp';
+                }
+                if (death_value) {
+                    html += moment(death_value.substr('+0000000'.length)).format('L');
+                }
+
+                html += '</div>';
+
                 if (image_page) {
                     $.getJSON(
                         "https://www.wikidata.org/w/api.php?callback=?",
@@ -91,12 +125,31 @@ function processLevel(data, item_id, child_id, lang, level, levelCb, rows) {
                             format : 'json'
                         },
                         function (data) {
-                            rows.push([{v:item_id, f: '<div><a href="' + location.href.replace(location.search, '') + '?q=' + item_id + '">' + label + '</a></div><img alt="File:' + image_page + '" src="' + data.query.pages['-1'].imageinfo[0].thumburl + '">'}, child_id, descr]);
+                            html += '<img alt="File:' + image_page + '" src="' + data.query.pages['-1'].imageinfo[0].thumburl + '">';
+                            rows.push(
+                                [
+                                    {
+                                        v:item_id,
+                                        f: html
+                                    },
+                                    child_id,
+                                    descr
+                                ]
+                            );
                             callback(null, rows);
                         }
                     );
                 } else {
-                    rows.push([{v:item_id, f: '<div><a href="' + location.href.replace(location.search, '') + '?q=' + item_id + '">' + label + '</a></div>'}, child_id, descr]);
+                    rows.push(
+                        [
+                            {
+                                v:item_id,
+                                f: html
+                            },
+                            child_id,
+                            descr
+                        ]
+                    );
                     callback(null, rows);
                 }
             }
