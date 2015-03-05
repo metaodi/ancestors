@@ -1,6 +1,8 @@
 google.load("visualization", "1", {packages:["orgchart"]});
 google.setOnLoadCallback(drawChart);
 
+moment.locale('en' , { longDateFormat: {'L': "DD/MM/YYYY" } });
+
 
 function getLevel(item_id, child_id, lang, level, callback, rows) {
     console.log("getLevel", level);
