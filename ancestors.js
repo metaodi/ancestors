@@ -107,10 +107,20 @@ function processLevel(data, item_id, child_id, lang, level, levelCb, rows) {
                 html += '<br/>' + gender_html;
                 moment.locale(lang);
                 if (birth_value) {
-                    html += '<br/>' + moment(birth_value.substr('+0000000'.length)).format('L') + '&nbsp;-&nbsp';
+                    birth_date_object = moment(birth_value.substr('+'.length));
+                    if (birth_date_object.isValid()) {
+                        html += '<br/>' + birth_date_object.format('L') + '&nbsp;-&nbsp';
+                    } else {
+                        html += '<br/>' + birth_value.substr('+'.length, 4) + '&nbsp;-&nbsp';
+                    }
                 }
                 if (death_value) {
-                    html += moment(death_value.substr('+0000000'.length)).format('L');
+                    death_date_object = moment(death_value.substr('+'.length));
+                    if (death_date_object.isValid()) {
+                        html += death_date_object.format('L');
+                    } else {
+                        html += death_value.substr('+'.length, 4);
+                    }
                 }
 
                 html += '</div>';
