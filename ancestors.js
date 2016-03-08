@@ -39,19 +39,19 @@ function processLevel(data, item_id, child_id, lang, level, levelCb, rows) {
     }
     var claims = data.entities[item_id].claims;
     // mother P25
-    if (claims['P25']) {
+    if (claims['P25'] && claims['P25'][0].mainsnak.snaktype === 'value') {
         var mother_item_id = 'Q' + claims['P25'][0].mainsnak.datavalue.value['numeric-id'] || null;
     }
     // father P22
-    if (claims['P22']) {
+    if (claims['P22'] && claims['P22'][0].mainsnak.snaktype === 'value') {
         var father_item_id = 'Q' + claims['P22'][0].mainsnak.datavalue.value['numeric-id'] || null;
     }
     // image P18
-    if (claims['P18']) {
+    if (claims['P18'] && claims['P18'][0].mainsnak.snaktype === 'value') {
         var image_page = claims['P18'][0].mainsnak.datavalue.value || null;
     }
     // gender P21
-    if (claims['P21']) {
+    if (claims['P21'] && claims['P21'][0].mainsnak.snaktype === 'value') {
         var gender_id = claims['P21'][0].mainsnak.datavalue.value['numeric-id'] || null;
         var gender_html = '';
         if (gender_id === 6581097) {
@@ -62,12 +62,12 @@ function processLevel(data, item_id, child_id, lang, level, levelCb, rows) {
     }
 
     // date of birth P569
-    if (claims['P569']) {
+    if (claims['P569'] && claims['P569'][0].mainsnak.snaktype === 'value') {
         var birth_value = claims['P569'][0].mainsnak.datavalue.value['time'] || null;
     }
 
     // date of death P570
-    if (claims['P570']) {
+    if (claims['P570'] && claims['P570'][0].mainsnak.snaktype === 'value') {
         var death_value = claims['P570'][0].mainsnak.datavalue.value['time'] || null;
     }
 
