@@ -104,6 +104,8 @@ function processLevel(data, item_id, child_id, lang, level, levelCb, rows) {
             function(callback) {
                 var html = '<div>';
                 html += '<a href="' + location.href.replace(location.search, '') + '?q=' + item_id + '">' + label + '</a>';
+                html += '<a href="//www.wikidata.org/wiki/' + item_id + '" title="wikidata:' + item_id + '">' + 
+                        '<img alt="wikidata:'+ item_id + '" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Wikidata-logo.svg/20px-Wikidata-logo.svg.png" width="20" height="11"/></a>'
                 html += '<br/>' + gender_html;
                 moment.locale(lang);
                 if (birth_value) {
