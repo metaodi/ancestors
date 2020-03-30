@@ -26,6 +26,20 @@ function getLevel(item_id, child_id, lang, level, callback, rows) {
     );
 }
 
+function getValue(claim) {
+    return (claim && claim[0].mainsnak.datavalue && claim[0].mainsnak.datavalue.value) || null;
+}
+
+function getValueData(claim, dataType) {
+    var value = getValue(claim);
+    return value ? value[dataType] : null;
+}
+
+function getValueQid(claim) {
+    var numericId = getValueData(claim, 'numeric-id');
+    return numericId ? 'Q' + numericId : null;
+}
+
 function processLevel(data, item_id, child_id, lang, level, levelCb, rows) {
     console.log("processLevel", level);
     // add a different class for fallback language
@@ -39,20 +53,14 @@ function processLevel(data, item_id, child_id, lang, level, levelCb, rows) {
     }
     var claims = data.entities[item_id].claims;
     // mother P25
-    if (claims['P25']) {
-        var mother_item_id = 'Q' + claims['P25'][0].mainsnak.datavalue.value['numeric-id'] || null;
-    }
+    var mother_item_id = getValueQid(claims['P25']);
     // father P22
-    if (claims['P22']) {
-        var father_item_id = 'Q' + claims['P22'][0].mainsnak.datavalue.value['numeric-id'] || null;
-    }
+    var father_item_id = getValueQid(claims['P22']);
     // image P18
-    if (claims['P18']) {
-        var image_page = claims['P18'][0].mainsnak.datavalue.value || null;
-    }
+    var image_page = getValue(claims['P18']);
     // gender P21
     if (claims['P21']) {
-        var gender_id = claims['P21'][0].mainsnak.datavalue.value['numeric-id'] || null;
+        var gender_id = getValueData(claims['P21'], 'numeric-id');
         var gender_html = '';
         if (gender_id === 6581097) {
             gender_html = '<i class="fa fa-mars"></i>';
@@ -62,14 +70,10 @@ function processLevel(data, item_id, child_id, lang, level, levelCb, rows) {
     }
 
     // date of birth P569
-    if (claims['P569']) {
-        var birth_value = claims['P569'][0].mainsnak.datavalue.value['time'] || null;
-    }
+    var birth_value = getValueData(claims['P569'], 'time');
 
     // date of death P570
-    if (claims['P570']) {
-        var death_value = claims['P570'][0].mainsnak.datavalue.value['time'] || null;
-    }
+    var death_value = getValueData(claims['P570'], 'time');
 
     async.parallel(
         [
